@@ -4,8 +4,12 @@
 import { useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "../../lib/firebase"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { createNewStream } from "../../lib/stream-utils"
+
 export default function AdminStreams() {
   const [user] = useAuthState(auth)
   const [title, setTitle] = useState("")
@@ -49,7 +53,7 @@ export default function AdminStreams() {
                 <label className="block text-sm font-medium mb-2">
                   Titre du stream
                 </label>
-                <input
+                <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Entrez le titre de votre stream"
@@ -61,7 +65,7 @@ export default function AdminStreams() {
                 <label className="block text-sm font-medium mb-2">
                   Description
                 </label>
-                <textarea
+                <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Décrivez votre stream"
@@ -90,11 +94,12 @@ export default function AdminStreams() {
                     <code className="flex-1 bg-gray-100 p-2 rounded">
                       {streamInfo.rtmpUrl}
                     </code>
-                    <button 
+                    <Button 
+                      variant="outline" 
                       onClick={() => navigator.clipboard.writeText(streamInfo.rtmpUrl)}
                     >
                       Copier
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 
@@ -104,11 +109,12 @@ export default function AdminStreams() {
                     <code className="flex-1 bg-gray-100 p-2 rounded">
                       {streamInfo.streamKey}
                     </code>
-                    <button 
+                    <Button 
+                      variant="outline" 
                       onClick={() => navigator.clipboard.writeText(streamInfo.streamKey)}
                     >
                       Copier
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -118,11 +124,12 @@ export default function AdminStreams() {
                     <code className="flex-1 bg-gray-100 p-2 rounded">
                       {streamInfo.streamUrl}
                     </code>
-                    <button 
+                    <Button 
+                      variant="outline" 
                       onClick={() => navigator.clipboard.writeText(streamInfo.streamUrl)}
                     >
                       Copier
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

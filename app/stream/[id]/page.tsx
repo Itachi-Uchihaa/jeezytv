@@ -10,7 +10,7 @@ import {
   increment,
 } from "firebase/firestore"
 import Hls from "hls.js"
-import StreamChat from "../../components/StreamChat"
+import StreamChat from "../../../components/StreamChat"
 
 interface Stream {
   id: string

@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { auth, db } from "../lib/firebase"
+import { auth, db } from "../app/lib/firebase"
 import {
   collection,
   addDoc,
@@ -13,6 +13,8 @@ import {
   limit,
   serverTimestamp,
 } from "firebase/firestore"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 interface Message {
   id: string
@@ -95,19 +97,19 @@ export default function StreamChat({ streamId }: { streamId: string }) {
       </div>
 
       <form onSubmit={handleSendMessage} className="flex gap-2">
-        <input
+        <Input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Votre message..."
           className="flex-grow bg-gray-800 text-white border-gray-700"
         />
-        <button 
+        <Button 
           type="submit" 
           disabled={!newMessage.trim()}
         >
           Envoyer
-        </button>
+        </Button>
       </form>
     </div>
   )

@@ -1,5 +1,5 @@
 // scripts/create-test-streams.ts
-import { db } from '../lib/firebase'
+import { db } from '../app/lib/firebase'
 import { collection, addDoc } from 'firebase/firestore'
 
 const createTestStreams = async () => {
