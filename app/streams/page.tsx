@@ -5,7 +5,6 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "../lib/firebase"
 import { collection, query, where, onSnapshot } from "firebase/firestore"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 
 interface Stream {
   id: string
@@ -54,7 +53,7 @@ export default function Streams() {
               <p className="text-gray-600 mb-4">{stream.description}</p>
               <p className="text-sm text-gray-500 mb-2">Spectateurs: {stream.viewerCount}</p>
               <Link href={`/stream/${stream.id}`}>
-                <Button>Regarder</Button>
+                <button>Regarder</button>
               </Link>
             </div>
           ))}
