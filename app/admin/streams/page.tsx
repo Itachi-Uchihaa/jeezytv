@@ -1,14 +1,16 @@
-// app/admin/streams/page.tsx
 "use client"
+
+import type React from "react"
 
 import { useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { auth } from "../../lib/firebase"
+import { auth } from "@/lib/firebase"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { createNewStream } from "../../lib/stream-utils"
+import { createNewStream } from "@/lib/stream-utils"
+import { toast } from "sonner"
 
 export default function AdminStreams() {
   const [user] = useAuthState(auth)
@@ -25,14 +27,21 @@ export default function AdminStreams() {
     try {
       const newStream = await createNewStream(user.uid, title, description)
       setStreamInfo(newStream)
+      toast.success("Stream créé avec succès!")
     } catch (error) {
       console.error("Erreur lors de la création du stream:", error)
+      toast.error("Erreur lors de la création du stream")
     }
     setLoading(false)
   }
 
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text)
+    toast.success(`${label} copié dans le presse-papier`)
+  }
+
   if (!user) {
-    return <div>Accès non autorisé</div>
+    return <div className="p-6">Accès non autorisé</div>
   }
 
   return (
@@ -42,7 +51,6 @@ export default function AdminStreams() {
       </div>
 
       <div className="grid gap-6">
-        {/* Formulaire de création */}
         <Card>
           <CardHeader>
             <CardTitle>Créer un nouveau stream</CardTitle>
@@ -50,9 +58,7 @@ export default function AdminStreams() {
           <CardContent>
             <form onSubmit={handleCreateStream} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Titre du stream
-                </label>
+                <label className="block text-sm font-medium mb-2">Titre du stream</label>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -62,9 +68,7 @@ export default function AdminStreams() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  Description
-                </label>
+                <label className="block text-sm font-medium mb-2">Description</label>
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -73,14 +77,13 @@ export default function AdminStreams() {
                 />
               </div>
 
-              <button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading}>
                 {loading ? "Création..." : "Créer le stream"}
-              </button>
+              </Button>
             </form>
           </CardContent>
         </Card>
 
-        {/* Informations du stream créé */}
         {streamInfo && (
           <Card>
             <CardHeader>
@@ -89,44 +92,32 @@ export default function AdminStreams() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium">URL du serveur (RTMP)</h3>
+                  <h3 className="font-medium">URL du serveur (WebRTC)</h3>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-gray-100 p-2 rounded">
-                      {streamInfo.rtmpUrl}
-                    </code>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => navigator.clipboard.writeText(streamInfo.rtmpUrl)}
-                    >
-                      Copier
-                    </Button>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium">Clé de stream</h3>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-gray-100 p-2 rounded">
-                      {streamInfo.streamKey}
-                    </code>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => navigator.clipboard.writeText(streamInfo.streamKey)}
-                    >
+                    <code className="flex-1 bg-muted p-2 rounded">{streamInfo.rtmpUrl}</code>
+                    <Button variant="outline" onClick={() => copyToClipboard(streamInfo.rtmpUrl, "URL du serveur")}>
                       Copier
                     </Button>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-medium">URL complète</h3>
+                  <h3 className="font-medium">Clé de stream</h3>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-gray-100 p-2 rounded">
-                      {streamInfo.streamUrl}
-                    </code>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => navigator.clipboard.writeText(streamInfo.streamUrl)}
+                    <code className="flex-1 bg-muted p-2 rounded">{streamInfo.streamKey}</code>
+                    <Button variant="outline" onClick={() => copyToClipboard(streamInfo.streamKey, "Clé de stream")}>
+                      Copier
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium">URL de visionnage</h3>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 bg-muted p-2 rounded">{streamInfo.streamUrl}</code>
+                    <Button
+                      variant="outline"
+                      onClick={() => copyToClipboard(streamInfo.streamUrl, "URL de visionnage")}
                     >
                       Copier
                     </Button>
@@ -136,7 +127,39 @@ export default function AdminStreams() {
             </CardContent>
           </Card>
         )}
+
+        {streamInfo && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Instructions pour OBS</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-muted p-4 rounded-lg">
+                  <h3 className="font-medium mb-2">Configuration OBS :</h3>
+                  <ol className="list-decimal list-inside space-y-2">
+                    <li>Ouvrez OBS Studio</li>
+                    <li>Allez dans Paramètres Flux</li>
+                    <li>Sélectionnez "Service personnalisé"</li>
+                    <li>Dans "Serveur", collez : {streamInfo.rtmpUrl}</li>
+                    <li>Dans "Clé de stream", collez : {streamInfo.streamKey}</li>
+                    <li>Cliquez sur "OK" et "Démarrer le streaming"</li>
+                  </ol>
+                </div>
+
+                <div className="bg-muted p-4 rounded-lg">
+                  <h3 className="font-medium mb-2">URL de visionnage pour vos spectateurs :</h3>
+                  <p className="break-all">
+                    {window.location.origin}
+                    {streamInfo.streamUrl}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )
 }
+

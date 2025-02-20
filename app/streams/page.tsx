@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { auth, db } from "../lib/firebase"
+import { auth, db } from "@/lib/firebase"
 import { collection, query, where, onSnapshot } from "firebase/firestore"
 import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 interface Stream {
   id: string
@@ -13,6 +15,7 @@ interface Stream {
   userId: string
   isLive: boolean
   viewerCount: number
+  streamId: string
 }
 
 export default function Streams() {
@@ -21,7 +24,10 @@ export default function Streams() {
 
   useEffect(() => {
     if (user) {
-      const streamsQuery = query(collection(db, "streams"), where("isLive", "==", true))
+      const streamsQuery = query(
+        collection(db, "streams"),
+        where("isLive", "==", true)
+      )
       const unsubscribe = onSnapshot(streamsQuery, (snapshot) => {
         const streamList = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -35,11 +41,15 @@ export default function Streams() {
   }, [user])
 
   if (loading) {
-    return <div>Chargement...</div>
+    return <div className="container mx-auto px-4 py-8">Chargement...</div>
   }
 
   if (!user) {
-    return <div>Vous devez être connecté pour voir cette page.</div>
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Vous devez être connecté pour voir cette page.
+      </div>
+    )
   }
 
   return (
@@ -48,14 +58,20 @@ export default function Streams() {
       {streams.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {streams.map((stream) => (
-            <div key={stream.id} className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-2">{stream.title}</h2>
-              <p className="text-gray-600 mb-4">{stream.description}</p>
-              <p className="text-sm text-gray-500 mb-2">Spectateurs: {stream.viewerCount}</p>
-              <Link href={`/stream/${stream.id}`}>
-                <button>Regarder</button>
-              </Link>
-            </div>
+            <Card key={stream.id}>
+              <CardHeader>
+                <CardTitle>{stream.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{stream.description}</p>
+                <p className="text-sm text-gray-500 mb-4">
+                  Spectateurs: {stream.viewerCount}
+                </p>
+                <Link href={`/stream/${stream.id}`}>
+                  <Button className="w-full">Regarder</Button>
+                </Link>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : (
@@ -64,4 +80,3 @@ export default function Streams() {
     </div>
   )
 }
-

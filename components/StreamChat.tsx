@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { auth, db } from "../app/lib/firebase"
+import { auth, db } from "../lib/firebase"
 import {
   collection,
   addDoc,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { sendSignInLinkToEmail, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
-import { auth } from "../app/lib/firebase"
+import { auth } from "../lib/firebase"
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -61,7 +61,7 @@ export default function Auth() {
       if (tokenResult.claims.admin) {
         router.push('/admin')
       } else {
-        router.push('/stream')
+        router.push('/streams')
       }
       
     } catch (error) {
