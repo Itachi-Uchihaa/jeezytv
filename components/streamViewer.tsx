@@ -1,3 +1,4 @@
+// components/StreamViewer.tsx
 "use client"
 
 import { useEffect, useState } from "react"
@@ -6,6 +7,8 @@ import { auth } from "@/lib/firebase"
 import { LiveKitRoom, VideoConference } from "@livekit/components-react"
 import "@livekit/components-styles"
 import { useRouter } from "next/navigation"
+
+const LIVEKIT_SERVER = "wss://jeezytv-0yemfakn.livekit.cloud"
 
 interface StreamViewerProps {
   streamId: string
@@ -17,7 +20,6 @@ export default function StreamViewer({ streamId }: StreamViewerProps) {
   const router = useRouter()
 
   useEffect(() => {
-    // Rediriger vers la page de connexion si non authentifié
     if (!user) {
       router.push("/")
       return
@@ -33,9 +35,15 @@ export default function StreamViewer({ streamId }: StreamViewerProps) {
           body: JSON.stringify({
             streamId,
             userId: user.uid,
+            title: `Viewer-${user.displayName || user.uid}`,
             isViewer: true,
           }),
         })
+
+        if (!response.ok) {
+          throw new Error('Failed to join stream')
+        }
+
         const data = await response.json()
         setToken(data.token)
       } catch (error) {
@@ -47,18 +55,26 @@ export default function StreamViewer({ streamId }: StreamViewerProps) {
   }, [streamId, user, router])
 
   if (!user || !token) {
-    return <div>Chargement...</div>
+    return (
+      <div className="w-full h-[60vh] flex items-center justify-center bg-muted rounded-lg">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+          <p>Connexion au stream...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <LiveKitRoom
       token={token}
-      serverUrl="wss://jeezytv-0yemfakn.livekit.cloud"
+      serverUrl={LIVEKIT_SERVER}
       connect={true}
-      className="w-full aspect-video bg-black rounded-lg"
+      className="w-full aspect-video bg-black rounded-lg overflow-hidden"
+      data-lk-theme="default"
+      style={{ height: '60vh' }}
     >
       <VideoConference />
     </LiveKitRoom>
   )
 }
-

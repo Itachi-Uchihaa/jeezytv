@@ -19,7 +19,7 @@ export default function ConfirmEmail() {
         }
 
         try {
-          const result = await signInWithEmailLink(auth, email || '', window.location.href)
+          await signInWithEmailLink(auth, email || '', window.location.href)
           window.localStorage.removeItem('emailForSignIn')
           setMessage('Connexion réussie!')
           router.push('/streams')

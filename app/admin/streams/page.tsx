@@ -12,11 +12,19 @@ import { Button } from "@/components/ui/button"
 import { createNewStream } from "@/lib/stream-utils"
 import { toast } from "sonner"
 
+interface StreamInfo {
+  rtmpServer: string
+  streamKey: string
+  streamUrl: string
+  rtmpUrl: string
+  webrtcUrl: string
+}
+
 export default function AdminStreams() {
   const [user] = useAuthState(auth)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [streamInfo, setStreamInfo] = useState<any>(null)
+  const [streamInfo, setStreamInfo] = useState<StreamInfo | null>(null)
   const [loading, setLoading] = useState(false)
 
   const handleCreateStream = async (e: React.FormEvent) => {
@@ -26,7 +34,7 @@ export default function AdminStreams() {
     setLoading(true)
     try {
       const newStream = await createNewStream(user.uid, title, description)
-      setStreamInfo(newStream)
+      setStreamInfo(newStream as unknown as StreamInfo)
       toast.success("Stream créé avec succès!")
     } catch (error) {
       console.error("Erreur lors de la création du stream:", error)
@@ -94,8 +102,8 @@ export default function AdminStreams() {
                 <div>
                   <h3 className="font-medium">URL du serveur (WebRTC)</h3>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-muted p-2 rounded">{streamInfo.rtmpUrl}</code>
-                    <Button variant="outline" onClick={() => copyToClipboard(streamInfo.rtmpUrl, "URL du serveur")}>
+                    <code className="flex-1 bg-muted p-2 rounded">{streamInfo.rtmpServer}</code>
+                    <Button variant="outline" onClick={() => copyToClipboard(streamInfo.rtmpServer, "URL du RTMP")}>
                       Copier
                     </Button>
                   </div>
@@ -138,21 +146,19 @@ export default function AdminStreams() {
                 <div className="bg-muted p-4 rounded-lg">
                   <h3 className="font-medium mb-2">Configuration OBS :</h3>
                   <ol className="list-decimal list-inside space-y-2">
-                    <li>Ouvrez OBS Studio</li>
-                    <li>Allez dans Paramètres Flux</li>
-                    <li>Sélectionnez "Service personnalisé"</li>
-                    <li>Dans "Serveur", collez : {streamInfo.rtmpUrl}</li>
-                    <li>Dans "Clé de stream", collez : {streamInfo.streamKey}</li>
-                    <li>Cliquez sur "OK" et "Démarrer le streaming"</li>
+                    <li>{"Ouvrez OBS Studio"}</li>
+                    <li>{"Allez dans Paramètres Flux"}</li>
+                    <li>{"Sélectionnez 'Service personnalisé'"}</li>
+                    <li>{"Dans 'Serveur', collez : " + streamInfo.rtmpUrl}</li>
+                    <li>{"Dans 'Clé de stream', collez : " + streamInfo.streamKey}</li>
+                    <li>{"Cliquez sur 'OK' et 'Démarrer le streaming'"}</li>
                   </ol>
                 </div>
 
                 <div className="bg-muted p-4 rounded-lg">
                   <h3 className="font-medium mb-2">URL de visionnage pour vos spectateurs :</h3>
-                  <p className="break-all">
-                    {window.location.origin}
-                    {streamInfo.streamUrl}
-                  </p>
+                  <p>URL WebRTC : {streamInfo.webrtcUrl}</p>
+                  <p>Page de visionnage : {window.location.origin}{streamInfo.streamUrl}</p>
                 </div>
               </div>
             </CardContent>

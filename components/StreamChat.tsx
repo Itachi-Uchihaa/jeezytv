@@ -12,6 +12,7 @@ import {
   orderBy,
   limit,
   serverTimestamp,
+  Timestamp
 } from "firebase/firestore"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -21,7 +22,7 @@ interface Message {
   text: string
   userId: string
   username: string
-  timestamp: any
+  timestamp: Timestamp
 }
 
 export default function StreamChat({ streamId }: { streamId: string }) {

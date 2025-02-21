@@ -13,7 +13,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Accès non autorisé</h1>
-          <p>Vous devez être connecté pour accéder au panneau d'administration.</p>
+          <p>{"Vous devez être connecté pour accéder au panneau d'administration."}</p>
         </div>
       </div>
     )
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-8">Panneau d'administration</h1>
+      <h1 className="text-3xl font-bold mb-8">{"Panneau d'administration"}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Carte Gestion des Streams */}

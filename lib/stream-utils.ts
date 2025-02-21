@@ -1,9 +1,7 @@
 import { db } from "./firebase"
 import { collection, addDoc, serverTimestamp, getDocs, query, where } from "firebase/firestore"
-import { AccessToken } from "livekit-server-sdk"
-import dotenv from "dotenv"
 
-dotenv.config()
+const LIVEKIT_SERVER = "jeezytv-0yemfakn.livekit.cloud"
 
 export async function createNewStream(userId: string, title: string, description: string) {
   try {
@@ -21,24 +19,32 @@ export async function createNewStream(userId: string, title: string, description
 
     const { token } = await response.json()
 
+    const rtmpServer = `rtmp://${LIVEKIT_SERVER}/live`
+    const streamKey = streamId
+    const webrtcUrl = `wss://${LIVEKIT_SERVER}`
+
     // Sauvegarder les informations du stream dans Firebase
-    const streamDoc = await addDoc(collection(db, "streams"), {
-      streamId,
-      userId,
-      title,
-      description,
-      status: "created",
-      createdAt: serverTimestamp(),
-      viewerCount: 0,
+    await addDoc(collection(db, "streams"), {
+          streamId,
+          userId,
+          title,
+          description,
+          status: "created",
+          createdAt: serverTimestamp(),
+          viewerCount: 0,
+          rtmpServer,
+          streamKey,
+          webrtcUrl,
     })
 
     // Retourner les informations pour OBS
     return {
       streamId,
       token,
-      rtmpUrl: "wss://jeezytv-0yemfakn.livekit.cloud", // URL WebRTC pour OBS
-      streamKey: streamId, // Utiliser le streamId comme clé
-      streamUrl: `/stream/${streamId}`, // URL de visionnage
+      rtmpServer,
+      streamKey,
+      webrtcUrl,
+      streamUrl: `/stream/${streamId}`,
     }
   } catch (error) {
     console.error("Erreur création stream:", error)

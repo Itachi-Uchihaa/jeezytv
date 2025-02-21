@@ -15,7 +15,7 @@ export default function Auth() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      // const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
       await sendSignInLinkToEmail(auth, email, {
         url: `${window.location.origin}/confirm`,
@@ -71,7 +71,7 @@ export default function Auth() {
   }
 
   // Déconnexion
-  const handleSignOut = async () => {
+/*   const handleSignOut = async () => {
     try {
       await auth.signOut()
       // Supprimer le cookie de session
@@ -82,7 +82,7 @@ export default function Auth() {
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error)
     }
-  }
+  } */
 
   // Vérifier la session au chargement
   useEffect(() => {

@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore"
+
 export interface Stream {
     id: string
     title: string
@@ -8,7 +10,7 @@ export interface Stream {
     rtmpUrl: string
     streamKey: string
     playbackUrl: string
-    createdAt: any
+    createdAt: Timestamp
     thumbnailUrl?: string
   }
   
@@ -22,5 +24,5 @@ export interface Stream {
     streamKey: string
     playbackUrl: string
     thumbnailUrl?: string
-    createdAt: any
+    createdAt: Timestamp
   }
